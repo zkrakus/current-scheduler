@@ -20,9 +20,9 @@ namespace ZKrakus.CurrentScheduler.API
     {
         private readonly SignInManager<AppUser> _signInManager;
 
-        public ILogger<UserController> _logger { get; }
-        public RoleManager<IdentityRole> _roleManager { get; }
-        public UserManager<AppUser> _userManager { get; }
+        public ILogger<UserController> _logger;
+        public RoleManager<IdentityRole> _roleManager;
+        public UserManager<AppUser> _userManager;
 
         public UserController(ILogger<UserController> logger, RoleManager<IdentityRole> roleManager, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
@@ -60,7 +60,7 @@ namespace ZKrakus.CurrentScheduler.API
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] InputModel userInput)
         {
-            var x = userInput;
+            //var x = userInput;
             var user = new AppUser { UserName = userInput.Email, Email = userInput.Email };
             var result = await _userManager.CreateAsync(user, userInput.Password);
             if (result.Succeeded)
