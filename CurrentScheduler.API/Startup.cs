@@ -12,18 +12,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi.Models;
 
 namespace ZKrakus.CurrentScheduler.API
 {
     public class Startup
     {
         public IConfiguration Configuration { get; set; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
         }
+
         public void ConfigureServices(IServiceCollection services)
         {
+            var x = Configuration.GetValue<string>("Secrets:JwtSecurityKey");
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("CurrentSchedulerAuth")));
@@ -41,12 +47,24 @@ namespace ZKrakus.CurrentScheduler.API
                 jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MySecretKey")),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("Secrets:JwtSecurityKey"))),
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromMinutes(5)
                 };
+            });
+
+            services.AddSwaggerGen(setup =>
+            {
+                setup.SwaggerDoc(
+                    "v1",
+                    new OpenApiInfo
+                    {
+                        Title = "CurrentScheduler API",
+                        Version = "v1"
+                    }
+                );
             });
         }
 
@@ -69,6 +87,12 @@ namespace ZKrakus.CurrentScheduler.API
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(x =>
+            {
+                x.SwaggerEndpoint("/swagger/v1/swagger.json", "CurrentScheduler API v1");
+            });
 
             app.UseEndpoints(endpoints =>
             {

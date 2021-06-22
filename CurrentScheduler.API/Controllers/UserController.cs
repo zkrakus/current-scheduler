@@ -15,7 +15,7 @@ namespace ZKrakus.CurrentScheduler.API
 {
     [ApiController]
     [AllowAnonymous]
-    [Route("[controller]/{Action}")]
+    [Route("[controller]")]
     public class UserController : ControllerBase
     {
         private readonly SignInManager<AppUser> _signInManager;
@@ -58,6 +58,7 @@ namespace ZKrakus.CurrentScheduler.API
         }
 
         [HttpPost]
+        [Route("Register")]
         public async Task<IActionResult> Register([FromBody] InputModel userInput)
         {
             //var x = userInput;
@@ -97,7 +98,9 @@ namespace ZKrakus.CurrentScheduler.API
 
             return Ok();
         }
-
+        
+        [HttpPost]
+        [Route("GenerateRoles")]
         public async Task<IActionResult> GenerateRoles()
         {
             string[] roles = { "Admin" };
