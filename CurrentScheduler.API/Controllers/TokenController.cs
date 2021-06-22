@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -16,13 +15,11 @@ namespace ZKrakus.CurrentScheduler.API.Controllers
     {
         private readonly ApplicationDbContext context;
         private readonly UserManager<AppUser> userManager;
-        private readonly IConfiguration configuration;
 
-        public TokenController(ApplicationDbContext context, UserManager<AppUser> userManager, IConfiguration configuration)
+        public TokenController(ApplicationDbContext context, UserManager<AppUser> userManager)
         {
             this.context = context;
             this.userManager = userManager;
-            this.configuration = configuration;
         }
 
         [Route("/token")]
@@ -70,7 +67,7 @@ namespace ZKrakus.CurrentScheduler.API.Controllers
             var token = new JwtSecurityToken(
                 new JwtHeader(
                     new SigningCredentials(
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("Secrets:JwtSecurityKey"))), // If this secret gets out someone would be able to edit and forge the token.
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MySecretKey")), // If this secret gets out someone would be able to edit and forge the token.
                             SecurityAlgorithms.HmacSha256 // Signing Algorithm
                         )
                     ),
